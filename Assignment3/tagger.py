@@ -7,15 +7,11 @@ class NNTagger(nn.Module):
         super(NNTagger, self).__init__()
         if pretrained is None:
             self.emd = embedding_dim
-            self.word_embeddings = nn.Embedding(vocab_size, self.emd)
+            self.word_embeddings = nn.Embedding(vocab_size, self.emd, padding_idx=0)
             self.init_weights()
         else:
             self.emd = pretrained.size(1)
-            self.word_embeddings = nn.Embedding(vocab_size, self.emd)
-
-            # Set pretrained embeddings
-            self.word_embeddings.weight.data.copy_(pretrained)
-            self.word_embeddings.weight.requires_grad = False
+            self.word_embeddings = nn.Embedding.from_pretrained(pretrained, padding_idx=0)
         
         self.hidden = nn.Linear((2*window_size+1) * self.emd, hidden_dim)
         if nonlinear in ['relu','tanh','sigmoid']:

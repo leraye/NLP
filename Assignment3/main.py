@@ -6,7 +6,6 @@ Created on Sat Dec 28 22:51:10 2019
 @author: heqingye
 """
 
-from io import open
 import argparse
 import torch
 import torch.nn as nn
@@ -104,15 +103,19 @@ try:
         print('-' * 80)
         # Save the model if the validation accuracy is the best we've seen so far.
         if not best_val_acc or val_acc > best_val_acc:
-            with open(args.save, 'wb') as f:
-                torch.save(tagger, f)
+            torch.save({'state_dict': tagger.state_dict()}, 'checkpoint.pth.tar')
+#            with open(args.save, 'wb') as f:
+#                torch.save(tagger, f)
             best_val_acc = val_acc
 except KeyboardInterrupt:
     print('-' * 80)
     print('Exiting from training early')
 
-with open(args.save, 'rb') as f:
-    best_model = torch.load(f)
+tagger = model.RNNTagger(ntokens, args.emsize, args.nhid, args.nlayers, ntags, args.bidirectional, pre_tr)
+checkpoint = torch.load('checkpoint.pth.tar')
+tagger.load_state_dict(checkpoint['state_dict'])
+#with open(args.save, 'rb') as f:
+#    best_model = torch.load(f)
 
 test_acc = evaluate(corpus.test)
 print('=' * 80)

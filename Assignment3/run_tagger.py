@@ -1,4 +1,3 @@
-from io import open
 import argparse
 import torch
 import torch.nn as nn
@@ -89,13 +88,18 @@ for epoch in range(1, args.epochs+1):
     print('-' * 80)
     # Save the model if the validation loss is the best we've seen so far.
     if not best_val_acc or val_acc > best_val_acc:
-        with open(args.save, 'wb') as f:
-            torch.save(model, f)
+        torch.save({'state_dict': model.state_dict()}, 'checkpoint.pth.tar')
+#        with open(args.save, 'wb') as f:
+#            torch.save(model, f)
         best_val_acc = val_acc
 
+model = tagger.NNTagger(args.emsize, args.nhid, ntokens, args.wsize, ntags, args.nonlinear, pre_tr)
+checkpoint = torch.load('checkpoint.pth.tar')
+model.load_state_dict(checkpoint['state_dict'])
 # Load the best saved model.
-with open(args.save, 'rb') as f:
-    model = torch.load(f)
+#with open(args.save, 'rb') as f:
+#    model = torch.load(f)
+#    model.rnn.flatten_parameters()
 
 # Run on test data.
 test_acc = evaluate(corpus.test)

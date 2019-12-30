@@ -74,7 +74,7 @@ class Corpus(object):
             for line in f:
                 symbols = line.split()
                 word = symbols[0]
-                emd_dict[word] = np.array(symbols[1:], dtype='float32')
+                emd_dict[word] = np.array(symbols[1:], dtype=np.float32)
         emsize = len(emd_dict[unk])
         emdmat = np.random.uniform(-0.1, 0.1, (self.dictionary.dict_len(), emsize))
         for w, wid in self.dictionary.word2idx.items():
@@ -82,5 +82,5 @@ class Corpus(object):
                 emdmat[wid] = emd_dict[w]
             else:
                 emdmat[wid] = emd_dict[unk]
-        return torch.from_numpy(emdmat).float()
+        return torch.from_numpy(emdmat)
                 
